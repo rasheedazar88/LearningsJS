@@ -1,0 +1,13 @@
+<script type="text/javascript">
+
+_cl.track("User registered")
+
+if(window.location.host == "parent.jaranda.kr"){
+    _cl.track("parentSignUp")
+}
+
+if(window.location.host == "teacher.jaranda.kr"){
+    _cl.track("teacherSignUp")
+}
+
+</script>

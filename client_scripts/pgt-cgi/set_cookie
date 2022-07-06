@@ -1,0 +1,92 @@
+(function(){
+    setTimeout(function(){
+        var b = [], c = document["cookie"]["split"](";");
+        var a = new RegExp("^\\s*brand_name=\\s*(.*?)\\s*$");
+        for (var d = 0, len = c["length"]; d < len; d++) {
+            var e = c[d]["match"](a);
+            e && b.push(e[1]);
+        }
+        if(b.length==0){
+            expiryDate = new Date();
+            expiryDate.setTime(expiryDate.getTime() + (86400 * 1000));
+            document.cookie = "brand_name=cgiwindows;domain=.cgiwindows.com;path=/;SameSite=Lax;expires=" + expiryDate.toGMTString();
+            var cl_properties = {
+                "customProperties": {
+                    "external_ids": {
+                        "t": "Object",
+                        "v": {
+                            "clabs_uid": {
+                                "t":"string",
+                                "v": CLabsgbVar.generalProps.uid
+                            }
+                        }
+                    }
+                }
+            }
+            _cl.identify(cl_properties, "Update user")
+        }
+    }, 2000)
+})()
+
+
+(function(){
+    setTimeout(function(){
+        var b = [], c = document["cookie"]["split"](";");
+        var a = new RegExp("^\\s*brand_name=\\s*(.*?)\\s*$");
+        for (var d = 0, len = c["length"]; d < len; d++) {
+            var e = c[d]["match"](a);
+            e && b.push(e[1]);
+        }
+        if(b.length==0){
+            expiryDate = new Date();
+            expiryDate.setTime(expiryDate.getTime() + (86400 * 1000));
+            document.cookie = "brand_name=pgtwindows;domain=.pgtwindows.com;path=/;SameSite=Lax;expires=" + expiryDate.toGMTString();
+            var cl_properties = {
+                "customProperties": {
+                    "external_ids": {
+                        "t": "Object",
+                        "v": {
+                            "clabs_uid": {
+                                "t":"string",
+                                "v": CLabsgbVar.generalProps.uid
+                            }
+                        }
+                    }
+                }
+            }
+            _cl.identify(cl_properties, "Update user")
+        }
+    }, 2000)
+})()
+
+
+
+(function(){
+    setTimeout(function(){
+        var b = [], c = document["cookie"]["split"](";");
+        var a = new RegExp("^\\s*brand_name=\\s*(.*?)\\s*$");
+        for (var d = 0, len = c["length"]; d < len; d++) {
+            var e = c[d]["match"](a);
+            e && b.push(e[1]);
+        }
+        if(b.length==0){
+            expiryDate = new Date();
+            expiryDate.setTime(expiryDate.getTime() + (86400 * 1000));
+            document.cookie = "brand_name=shielded-eyrie-45679;domain=.shielded-eyrie-45679.herokuapp.com;path=/;SameSite=Lax;expires=" + expiryDate.toGMTString();
+            var cl_properties = {
+                "customProperties": {
+                    "external_ids": {
+                        "t": "Object",
+                        "v": {
+                            "clabs_uid": {
+                                "t":"string",
+                                "v": CLabsgbVar.generalProps.uid
+                            }
+                        }
+                    }
+                }
+            }
+            _cl.identify(cl_properties, "Update user")
+        }
+    }, 2000)
+})()

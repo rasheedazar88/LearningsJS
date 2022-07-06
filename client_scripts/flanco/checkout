@@ -1,0 +1,72 @@
+<script>
+    setTimeout(function(){
+
+        function genProductProps(productsData){
+            var products = [];
+            for(var cli in  productsData){
+                var product = productsData[cli];
+                var newproduct = {};
+                for(prodkey in product){
+                    switch(prodkey){
+                    case "id":
+                        newproduct["product_id"] = product[prodkey];
+                        break;
+                    case "name": 
+                        newproduct["product_name"] = product[prodkey];
+                        break;
+                    case "price":
+                        newproduct["product_price"] = product[prodkey];
+                        break;
+                    case "brand":
+                        newproduct["product_brand"] = product[prodkey];
+                        break;
+                    case "category":
+                        newproduct["product_category"] = product[prodkey];
+                        break;
+                    case "image":
+                        newproduct["product_image"]= product[prodkey]
+                    default:
+                        newproduct["product_" + prodkey] = product[prodkey];
+                        break;
+                    }
+                }
+                products.push(newproduct);
+            }
+            return products;
+        };
+        function genValue(productsData){
+            var val = 0;
+            for(var cli in  productsData){
+                var product = productsData[cli];
+                var qty = 1;
+                if(product["quantity"]){
+                    qty = product["quantity"]
+                }
+                var price = Number(product["price"])
+                console.log(qty, price)
+                var product_price = qty * price
+                val = val + product_price 
+            }
+            return val
+        };
+        var ecommerceEvent = window.google_tag_manager["GTM-TJ3KPM"].dataLayer.get("ecommerce");
+        var properties = {}
+        var value = genValue(ecommerceEvent.checkout.products)
+        properties["customProperties"] = {
+            "currency": {
+                "t": "string",
+                "v": "RON"
+            },
+            "content_type": {
+                "t": "string",
+                "v": "product_group"
+            },
+            "value":  {
+                "t": "number",
+                "v": value
+            }
+        }
+        properties["productProperties"] = genProductProps(ecommerceEvent.checkout.products)
+        _cl.trackClick("Checkout made", properties)
+    }, 1500)
+</script>

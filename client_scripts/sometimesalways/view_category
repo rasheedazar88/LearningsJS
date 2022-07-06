@@ -1,0 +1,25 @@
+<script>
+function trigger() {
+    var cdl = dataLayer || {};
+    var hasEvent = false;
+    for (var i in cdl) {
+        obj = cdl[i];
+        if (obj.event == "viewCategory") {
+            var properties = {};
+            properties["customProperties"] = {
+                "category_name": {
+                    "t": "string",
+                    "v": obj.currentCategory
+                }
+            };
+            _cl.pageview("Category viewed", properties);
+            hasEvent = true;
+        }
+    };
+    if (!hasEvent) {
+        setTimeout(function () { trigger() }, 1000)
+    }
+};
+
+trigger()
+</script>

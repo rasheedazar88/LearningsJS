@@ -1,0 +1,51 @@
+expiryDate = new Date();
+expiryDate.setTime(expiryDate.getTime() + (300 * 1000));
+document.cookie = "total_lead=true;domain=.cgiwindows.com;path=/;SameSite=Lax;expires=" + expiryDate.toGMTString();
+
+
+
+document.cookie = "total_lead=true;domain=.cgiwindows.com;path=/;SameSite=Lax;expires=Thu, 01 Jan 1970 00:00:01 GMT";
+
+
+(function(){
+    if(window.location.host == "wtb.cgiwindows.com" && window.location.pathname == "/"){
+        expiryDate = new Date();
+        expiryDate.setTime(expiryDate.getTime() + (300 * 1000));
+        document.cookie = "trigger_lead=true;domain=.cgiwindows.com;path=/;SameSite=Lax;expires=" + expiryDate.toGMTString();
+    }else{
+        if(window.location.pathname=="/thank-you"){
+            var b = [], c = document["cookie"]["split"](";");
+            var a = new RegExp("^\\s*trigger_lead=\\s*(.*?)\\s*$");
+            for (var d = 0, len = c["length"]; d < len; d++) {
+                var e = c[d]["match"](a);
+                e && b.push(e[1]);
+            }
+            if(b.length>0){
+                _cl.track("cgi_total_leads")
+                document.cookie = "trigger_lead=true;domain=.cgiwindows.com;path=/;SameSite=Lax;expires=Thu, 01 Jan 1970 00:00:01 GMT";
+            }
+        }
+    }
+})()
+
+
+(function(){
+    
+    if(window.location.host == "shielded-eyrie-45679.herokuapp.com" && window.location.pathname == "/"){
+        expiryDate = new Date();
+        expiryDate.setTime(expiryDate.getTime() + (300 * 1000));
+        document.cookie = "trigger_lead=true;domain=.shielded-eyrie-45679.herokuapp.com;path=/;SameSite=Lax;expires=" + expiryDate.toGMTString();
+    }else{
+        var b = [], c = document["cookie"]["split"](";");
+        var a = new RegExp("^\\s*trigger_lead=\\s*(.*?)\\s*$");
+        for (var d = 0, len = c["length"]; d < len; d++) {
+            var e = c[d]["match"](a);
+            e && b.push(e[1]);
+        }
+        if(b.length>0){
+            _cl.track("cgi_total_leads")
+            document.cookie = "trigger_lead=true;domain=.shielded-eyrie-45679.herokuapp.com;path=/;SameSite=Lax;expires=Thu, 01 Jan 1970 00:00:01 GMT";
+        }
+    }
+
+})()

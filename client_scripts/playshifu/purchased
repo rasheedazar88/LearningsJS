@@ -1,0 +1,74 @@
+<script>
+    setTimeout(function(){
+
+        function genProductProps(productsData){
+            var products = [];
+            for(var cli in  productsData){
+                var product = productsData[cli];
+                var newproduct = {};
+                for(prodkey in product){
+                    switch(prodkey){
+                    case "id":
+                    case "sku":
+                        newproduct["product_id"] = product[prodkey];
+                        break;
+                    case "name": 
+                    case "display_name": 
+                        newproduct["product_name"] = product[prodkey];
+                        break;
+                    case "price":
+                        newproduct["product_price"] = product[prodkey];
+                        break;
+                    case "variant":
+                        newproduct["product_variant"] = product[prodkey];
+                        break;
+                    case "category":
+                        newproduct["product_category"] = product[prodkey];
+                        break;
+                    case "image":
+                        newproduct["product_image"]= product[prodkey]
+                    default:
+                        newproduct["product_" + prodkey] = product[prodkey];
+                        break;
+                    }
+                }
+                products.push(newproduct);
+            }
+            return products;
+        };
+        var ecommerceEvent = window.google_tag_manager["GTM-MLJN68K"].dataLayer.get("ecommerce");
+        var properties = {}
+        properties["customProperties"] = {
+            "currency": {
+                "t": "string",
+                "v": ecommerceEvent.purchase.actionField["currencyCode"]
+            },
+            "affiliation": {
+                "t": "string",
+                "v": ecommerceEvent.purchase.actionField["affiliation"]
+            },
+            "content_type": {
+                "t": "string",
+                "v": "product_group"
+            },
+            "value":  {
+                "t": "number",
+                "v": ecommerceEvent.purchase.actionField["revenue"]
+            },
+            "revenue":  {
+                "t": "number",
+                "v": ecommerceEvent.purchase.actionField["revenue"]
+            },
+            "shipping":  {
+                "t": "string",
+                "v": ecommerceEvent.purchase.actionField["shipping"]
+            },
+            "transaction_id": {
+                "t": "string",      
+                "v": ecommerceEvent.purchase.actionField["id"]
+            }
+        }
+        properties["productProperties"] = genProductProps(ecommerceEvent.purchase.products);
+        _cl.trackClick("Purchased", properties)
+    }, 1500)
+</script>
