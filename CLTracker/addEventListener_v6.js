@@ -1,4 +1,5 @@
 var configurations = [
+  // Welcome
   {
     selector: ".banner__heading",
     events: ["click", "dblclick"],
@@ -9,16 +10,18 @@ var configurations = [
       },
     },
   },
+  // Give customers details about the banner image(s) or content on the template.
   {
     selector: ".banner__text",
     events: ["dblclick"],
     data: {
       sample: {
-        selector: "rich-text__text",
+        selector: "_ab",
         type: "query_params",
       },
     },
   },
+  // Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.
   {
     selector: ".rich-text__text",
     events: ["click"],
@@ -28,7 +31,7 @@ var configurations = [
         type: "cookie",
       },
       gender: {
-        selector: ".banner__text",
+        selector: "function evaluate() { var x=10; y=10; z=x+y; return z; }; evaluate(); ",
         type: "javascript",
       },
     },
@@ -37,16 +40,13 @@ var configurations = [
     selector: ".title",
     events: ["click", "dblclick"],
     data: {
-        name: {
-            selector: ".title", 
-            type: "text"
-        }
+      name: {
+        selector: ".title",
+        type: "text",
+      },
     },
   },
 ];
-
-let query_params = {};
-let eventData = {};
 
 for (var i = 0; i < configurations.length; i++) {
   let configuration = configurations[i];
@@ -55,40 +55,35 @@ for (var i = 0; i < configurations.length; i++) {
     for (k = 0; k < configuration.events.length; k++) {
       var domevent = configuration.events[k];
       var element = elements[j];
-
-      for (var attribute in configuration.data) {
-        let type = configuration.data[attribute].type;
-        let value = configuration.data[attribute].selector;
-        if (type == "query_params") {
-          let urlString = window.location.href;
-          let paramString = urlString.split("?")[1];
-          let queryString = new URLSearchParams(paramString);
-          for (let pair of queryString.entries()) {
-            query_params[pair[0]] = pair[1];
+      element.addEventListener(domevent, function () {
+        let eventData = {};
+        for (var attribute in configuration.data) {
+          let settings = configuration.data[attribute];
+          let type = configuration.data[attribute].type;
+          if (type == "text") {
+            let value = document.querySelector(settings.selector).innerText;
+            eventData[attribute] = value;
+          } else if (type == "query_params") {
+            const urlParams = new URLSearchParams(window.location.search);
+            var searchParamsKey = configuration.data[attribute].selector;            
+            const urlParamsValue = urlParams.get(searchParamsKey);
+            eventData[attribute] = urlParamsValue;
+          } else if (type == "cookie") {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${settings.selector}=`);
+            if (parts.length === 2) {
+              var cookieValue = parts.pop().split(";").shift();
+            }            
+            eventData[attribute] = cookieValue;
+          } else if (type == "javascript") {
+            var scriptResult = eval(settings.selector);
+            eventData[attribute] = scriptResult;
+            // var scriptResult = new Function(settings.selector);
+            // eventData[attribute] = scriptResult();
           }
-        } else if (type === "text") {
-          element.addEventListener(domevent, function () {
-            for (var attribute in configuration.data) {
-              let settings = configuration.data[attribute];
-              let value = document.querySelector(settings.selector).innerText;
-              eventData[attribute] = value;
-                console.log({ eventData: eventData });
-            }
-          });
-        } else if (type == "cookie") {
-          var cookieEvent = {};
-          let cookie = {};
-          document.cookie.split(";").forEach(function (el) {
-            let [k, v] = el.split("=");
-            cookie[k.trim()] = v;
-          });
-          cookieEvent[value] = cookie[value];
-        } else if (type == "javascript") {
-
         }
-      }
+        console.log({ eventData: eventData });
+      });
     }
   }
 }
-console.log({ eventData: query_params });
-console.log({eventData: cookieEvent})
