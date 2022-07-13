@@ -46,7 +46,7 @@ var configurations = [
       },
     },
   },
-];
+];  
 
 for (var i = 0; i < configurations.length; i++) {
   let configuration = configurations[i];
@@ -78,8 +78,6 @@ for (var i = 0; i < configurations.length; i++) {
           } else if (type == "javascript") {
             var scriptResult = eval(settings.selector);
             eventData[attribute] = scriptResult;
-            // var scriptResult = new Function(settings.selector);
-            // eventData[attribute] = scriptResult();
           }
         }
         console.log({ eventData: eventData });
@@ -87,3 +85,15 @@ for (var i = 0; i < configurations.length; i++) {
     }
   }
 }
+
+
+var search = document.getElementById("Search-In-Modal"); 
+search.addEventListener("submit", function(){
+  console.log("SEARCH SUBMITTED")
+})
+
+
+
+
+
+fbq('track', 'CompleteRegistration');
