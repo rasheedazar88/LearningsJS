@@ -34,20 +34,11 @@ var eventName = "Purchased"
                 "t": "string",
                 "v": "black"
             },
-            "product_coupen": {
-                "t": "string",
-                "v": "CLABS001"
-            },
-            "product_position": {
-                "t": "number",
-                "v": "1"
-            },
             "product_image": {
                 "t": "string",
                 "v": "https://cdn.shopify.com/s/files/1/0251/2555/2216/products/2014_11_3_Addis_Look17_02_940x.jpg?v=1563886402"
             }
         },
-        
         {
             "product_name":{
                 "t": "string",
@@ -81,20 +72,11 @@ var eventName = "Purchased"
                 "t": "string",
                 "v": "black"
             },
-            "product_coupen": {
-                "t": "string",
-                "v": "CLABS002"
-            },
-            "product_position": {
-                "t": "number",
-                "v": "2"
-            },
             "product_image": {
                 "t": "string",
                 "v": "https://cdn.shopify.com/s/files/1/0251/2555/2216/products/2014_08_11_Lana_Look4_11_940x.jpg?v=1563886355"
             }
         },
-
         {
             "product_name":{
                 "t": "string",
@@ -128,14 +110,6 @@ var eventName = "Purchased"
                 "t": "string",
                 "v": "blue"
             },
-            "product_coupen": {
-                "t": "string",
-                "v": "CLABS003"
-            },
-            "product_position": {
-                "t": "number",
-                "v": "3"
-            },
             "product_image": {
                 "t": "string",
                 "v": "https://cdn.shopify.com/s/files/1/0251/2555/2216/products/2014_10_18_Lana_Look1101_2048x2048.jpg?v=1563886175"
@@ -155,7 +129,7 @@ var eventName = "Purchased"
              "t": "string",
              "v": "CLABS"
         },
-        "value": {
+        "subtotal": {
             "t": "number",
             "v": "11000"
         },
@@ -163,13 +137,13 @@ var eventName = "Purchased"
             "t": "number",
             "v": "110"
         },
-        "total_value": {
-            "t": "number",
-            "v": "11140"
-        },
         "shipping" : {
             "t": "number",
             "v": "30"
+        },
+        "value": {
+            "t": "number",
+            "v": "11140"
         }
     }
   }

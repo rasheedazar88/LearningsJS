@@ -1,0 +1,131 @@
+import React, {Component, useState} from 'react';
+import cookie from 'react-cookie';
+
+const SearchPreview = React.createClass({
+
+    getInitialState: function () {
+        return{
+            isHovering: false
+        };
+    },
+
+    render: function() {
+        return (            
+            <div onClick={() => this.props.updateText(this.props.name)} style={{overflowX: 'clip' }}>
+                <p>{this.props.name}</p>
+            </div>
+        )
+    }
+})
+
+class SearchBar extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            renderedResults: [], 
+            searchText: '',
+            showSearchBar: false
+        }
+        this.updateText = this.updateText.bind(this);
+       
+    }
+
+    componentDidMount() {
+        console.log(this.props.showNoVal);
+    }
+
+    
+
+    updateText(item) {
+        console.log(item.value)
+        this.props.updateField("value", item.value, false);
+
+        this.setState({
+            searchText: item.value,
+            showSearchBar: false
+        })
+
+    }
+
+
+    //  keylength(){
+    //     this.keylength = this.keyword.length;
+    //  }
+    onChange(value){
+        this.setState({
+            searchText: value,
+            showSearchBar: true
+        })
+
+        var that = this; 
+        $.ajax({
+            url: window.optUrl,
+            type: 'POST',
+            // async: true,
+            data : {'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': 'attrib', 'field': 'attributes.value',
+                    'cond': '[{"prop": "action","value": "pageview"}]',
+                    'like_cond': '[{"prop":"attributes.key.raw","value":"url"}]'},
+            dataType: 'json',
+            success: function(res){
+                that.setState({
+                    renderedResults: res.values
+                });
+            }
+        });
+    }
+    render() {
+        const renderedResults = this.state.renderedResults.map((item) => <div onClick={(e)=>this.updateText(item)} className='searchPreview' key={item.value} style={{overflowX: 'clip' }}><p>{item.label}</p></div>);
+        return (
+            <div style={{position: 'relative'}}> 
+                <div style={{position: "relative"}}>
+                    <input
+                        className="form-control height-37"
+                        placeholder="value" 
+                        value = { this.state.searchText}
+                        onChange={(e)=>this.onChange(e.target.value)}
+                    />
+                    {/* {(!this.props.data.length > 0) && (this.props.showSearchBar) && (!this.props.showNoVal)? 
+                    <div className="icon-container">
+                        <i className="loader"></i>
+                    </div> : null} */}
+                </div>
+                { this.props.field!= "" && this.props.showSearchBar ? 
+                (this.props.showNoVal)? <div style={{
+                    display: this.state.showSearchBar ? 'flex' : 'none',
+                    flexDirection: "column",
+                    backgroundColor: "white",
+                    border: "1px solid #e5e6e7",
+                    maxHeight: "100px",
+                    padding: "5px",
+                    overflowY: "scroll",
+                    borderRadius: "0.2rem",
+                    width: '100%',
+                    position: 'absolute'
+                }}>No Results Found</div>:
+                this.props.data.length > 0 ?
+                <div style={{
+                    display: this.state.showSearchBar ? 'flex' : 'none',
+                    flexDirection: "column",
+                    zIndex: "2",
+                    backgroundColor: "white",
+                    border: "1px solid #e5e6e7", 
+                    maxHeight: "100px",
+                    padding: "5px",
+                    overflowY: "scroll",
+                    borderRadius: "0.2rem",
+                    cursor: "pointer",
+                    width: '100%',
+                    position: 'absolute'
+                }}>
+                    {
+                        renderedResults
+                    }
+                    
+                </div>  : null : null }
+            </div>
+        )
+    }
+}
+
+export default SearchBar;

@@ -1,0 +1,98 @@
+.service span {
+    display: block;
+    padding: 20px 15px 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
+    background-color: #ffffff;
+    box-shadow: 0 0 4px 2px rgb(0 0 0 / 4%);
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    min-height: 154px;
+    min-width: 140px;
+
+}
+.search-label {
+    box-shadow: 1px 3px 8px -3px #7de3bd;
+    display: inline-block;
+    height: 70px;
+    width: 70px;
+    vertical-align: top;
+    background: #ffffff;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+.service-icon {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    -webkit-transform: scale(2);
+    -moz-transform: scale(2);
+    -o-transform: scale(2);
+    transform: scale(2);
+
+    display: inline-block;
+    margin: auto;
+    
+    background: url(../../../assets/images/icons-14.svg);
+    height: 14px;
+    width: 14px;
+    -webkit-transform: scale(2);
+    -moz-transform: scale(2);
+    -o-transform: scale(2);
+    transform: scale(2);
+}
+
+.service-icon.i1 {
+    background-position: -992px 0;
+}
+.service-icon.i2 {
+    background-position: -202px 0;
+}
+.service-icon.i3 {
+    background-position: -937px 0;
+}
+.service-icon.i4 {
+    background-position: -588px 0;
+}
+.service-icon.i5 {
+    background-position: -918px 0;
+}
+.service-icon.i6 {
+    background-position: -680px 0;
+}
+.service-icon.i7 {
+    background-p7osition: -18px 0;
+}
+.service-icon.i8 {
+    background-position: 0 0;
+}
+.service-icon.i9 {
+    background-position: -348px 0;
+}
+.service-icon.i10 {
+    background-position: -1010px 0;
+}
+.service-icon.i11 {
+    background-position: -698px 0;
+}
+.service-icon.i12 {
+    background-position: -73px 0;
+}
+.service {
+    flex-flow: wrap;
+    margin-top: 20px;
+}
+.service h6 {
+    font-size: 14px;
+    margin-top: 14px;
+    font-weight: 500;
+    color: #000;
+}
+

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load app_utils %}
+{% block title %}Code Installation{% endblock %}
+{% block stylesheets %} {% endblock %}
+{% block scripts %}
+<script src="/static/js/js.cookie.js"></script>
+<script>
+    function openActionRecorder() {
+        var btTxt = $(".ladda-label").text();
+        {% if path.is_verified %}
+            if (btTxt == 'Test Action Recorder') {
+                window.location = "{% url 'setup:action-test-check' ac_seq %}";
+            } else {
+                window.open("{% url 'visualizer:index' ac_seq %}", "_blank");
+            }
+        {% else %}
+            window.location = "{% url 'setup:code-setup' ac_seq %}?redirect=true";
+        {% endif %}
+    }
+</script>
+{% endblock %} {% block maincontent %}
+
+<!--				 This is the row which is the sidenavbar in the setup's screens-->
+<div class="row">
+    {% include 'workflow/flow_left_nav.html' %}
+    <div class="col-md-8 col-lg-8 border-style1 text-change_info" style="padding-top: 0;">
+        <div class="row bg-secondary">
+            <div class="col-md-12 nopadding"> 
+                <h2 class="font-bold font-size-22 font_color_subs no-margins padding-left-25 padding-v-10">Send data to Destination</h2>
+            </div>
+        </div>
+        <div class="row cl_user_deletion_mb_magt">
+            <h1 class="stage_size text-align-center font-weight-500 font_color_subs">Improve audience match rates by 3X times in Facebook and Google Ads.</h1>
+        </div>
+        <div class="row">
+            <h4 class="padding-hr-200 text-align-center cl_subscription-plans-margins" style="line-height: 2;">
+                Start collecting Google and Facebook ids by connecting ad platforms to improve first-party audience match rates.
+            </h4>
+        </div>
+        <div class="row" style="margin-bottom: 95px;">
+            <div class="col-md-4 nopadding">
+                <button class="padding-v-10 bg-secondary border-style1 floatr font-weight-500" onclick="location.href='{% url 'integrations:index' ac_seq %}';">
+                    <span class="event_styles_td floatl">
+                        <img src="../../../static/Img/icon_pixel.png" alt="pixel" />
+                    </span>
+                    <span class="event_styles_td floatr space">Connect Facebook</span>
+                </button>
+            </div>
+            <div class="col-md-4 text-align-center nopadding">
+                <button class="padding-v-10 bg-secondary border-style1 font-weight-500" onclick="location.href='{% url 'integrations:index' ac_seq %}';">
+                    <span class="event_styles_td floatl">
+                        <img src="../../../static/Img/icon_ga.png" alt="ga" />
+                    </span>
+                    <span class="event_styles_td floatr space">Connect Google Analytics</span>
+                </button>
+            </div>
+            <div class="col-md-4 nopadding">
+                <button class="padding-v-10 bg-secondary border-style1 floatl font-weight-500" onclick="location.href='{% url 'integrations:index' ac_seq %}';">
+                    <span class="event_styles_td floatl">
+                        <img src="../../../static/Img/icon_ads.png" alt="ads" />
+                    </span>
+                    <span class="event_styles_td floatr space">Connect Google Analytics</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<script>
+    {% if path.is_verified and not evt_count %}
+    $(document).ready(function () {
+        function polling() {
+            $.ajax({
+                data: {
+                    'csrfmiddlewaretoken': Cookies.get('csrftoken')
+                },
+                type: 'POST',
+                url: '{% url "setup:check-action-recorded" ac_seq %}',
+                timeout: 10000,
+                success: function (res) {
+                    if (res == 'true') {
+                        $('.smiley-style-yellow').addClass('smiley-style-green').removeClass('smiley-style-yellow');
+                        $('#actNotify').text('Happy to see that you’ve configured Actions');
+                        $('.ladda-label').text('Test Action Recorder');
+                    }
+                },
+                error: function () {
+                    clalert('error', 'There is an error. Please reload the page.');
+                }
+            });
+        }
+        polling();
+        (function poll() {
+            setInterval(function () {
+                polling();
+            }, 10000);
+        })();
+    });
+    {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% load app_utils %}
+{% block title %}Code Installation{% endblock %}
+{% block stylesheets %}
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/js.cookie.js"></script>
+
+<script>
+	$(document).ready(function(){
+
+		$("#installBt").click(function(){
+			$("#installBtDiv").hide();
+			$("#codeVerifyDiv").show();
+		});
+		$("#verify_url").click(function(){
+			var url = $("#id_url_verify").val();
+			if($.trim(url) == ''){
+				$('#url_error').show();
+				return false;
+			}
+			l.start();
+			$(".ladda-label").text('Checking ...');
+			$.ajax({
+                url : '{% url "setup:code-verify" ac_seq %}',
+                data : {'csrfmiddlewaretoken':Cookies.get('csrftoken'), 'new_url': url},
+                type : 'POST',
+                success:function(op){
+					if(op.result == 'url_error'){
+						$('#url_error').show().text(op.error);
+						l.stop();
+						$(".ladda-label").text('Allow URL');
+						return true;
+					}
+					else if(op.result == 'error'){
+						l.stop();
+						$(".ladda-label").text('Allow URL');
+						$('#url_error').show().text('Tracking code not found. Please install the above code on your website');
+					}
+					else{
+						l.stop();
+						$(".ladda-label").text('Success');
+						console.log(op.url_verified);
+						if(op.url_verified) {
+							window.location = '{% url "setup:code-verify-success" ac_seq %}?verified=1';
+						}
+						else{
+							window.location = '{% url "setup:code-verify-success" ac_seq %}';
+						}
+					}
+
+                },
+                error: function() {
+                  clalert('error', 'Error verifying the URL. Please reload the page and retry. Still have trouble? Contact Support.');
+					l.stop();
+					$(".ladda-label").text('Allow URL');
+                }
+            })
+		});
+
+		$("#sendEmail").click(function(){
+			var email = $('#email').val();
+			if (!isEmail(email)){
+				$("#email_error").text('Please enter a valid email').show();
+				$('#email').focus();
+				return false;
+			}
+            $("#email_error").hide();
+		    $.ajax({
+				url : '{% url "setup:email-tracking-code" ac_seq %}',
+				data : {'csrfmiddlewaretoken': Cookies.get('csrftoken'), 'email': email},
+				type : 'POST',
+				success:function(res){
+				  if(res == "success"){
+					  $("#email_error").text('Email has been sent').show();
+				  }
+				  else
+				  {
+					$("#email_error").text('not sent').show();
+				  }
+				},
+				error: function() {
+					$("#email_error").text('There is an error. Please refresh and try').show();
+				}
+          })
+        });
+
+	});
+	function isEmail(email) {
+		var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		return regex.test(email);
+	}
+	function openChildWindow(){
+        window.open('/oauth/gtm/{{ac_seq}}/','Google oAuth','width=800,height=500,location=no');
+    }
+</script>
+{% endblock %}
+{% block maincontent %}
+	<div class="row">
+		<div class="col-md-8 col-md-offset-3 col-lg-8">
+			<div class="header-secondary">
+				<div class="col-lg-5 col-md-5">
+					<a href="{% url 'setup:workflow' ac_seq %}"><i class="fa fa-arrow-left fa-2x icon-gray" aria-hidden="true"></i></a>
+					<h3 class="displaybl text-change_info">Install Tracking Code</h3>
+				</div>
+
+				<div class="col-md-6 col-lg-6 heading-fixing">
+					<div class="header-message">
+						{% if path.is_verified %}
+						<p>Started receiving data from the website</p>
+						<!-- <p>Connect your website & I'll turn green</p> -->
+						{% else %}
+						<p>Connect your website & I'll turn green</p>
+						{% endif %}
+					</div>
+				</div>
+				<div class="col-md-1 col-lg-1 {% if path.is_verified %}smiley-style-green{% else %}smiley-style-yellow{%endif%}">
+					<i class="fa fa-smile-o fa-2x smiley-icon" aria-hidden="true"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		{% include 'workflow/flow_left_nav.html' %}
+		<div class="col-md-8 col-lg-8">
+			<div class="ibox float-e-margins">
+				<div class="ibox-content">
+					<div class="row">
+						<div class="col-xs-12 col-md-12">
+							<h1 class="text-change_info">Hi {{request.user.first_name}}!
+								<i class="em em-wave emoji-styling"></i>
+							</h1>
+						</div>
+					</div>
+					<div class="row">
+						<div class="main-header-submessage">
+							<p>For your convenience, we have 4 different options through which you can install the code on your website.</p>
+						</div>
+					</div>
+					<div class="row main-message">
+						<div class="col-md-8 col-md-offset-2 col-lg-8">
+							<div class="row">
+								<p class="codeinstall-message">Copy & paste this code inside the head tag of the pages you would like to track</p>
+							</div>
+							<div class="row padding-2">
+								<!-- Target -->
+								<input id="code" class="clipboard-styling" value='{% autoescape on %}{{track_code}}{% endautoescape %}'>
+								<button class="btn clipboard-button-styling" data-clipboard-target="#code" data-toggle="popover" data-placement="auto top" data-content="Copied" data-original-title title aria-describedby="popover547675">
+									<i class="fa fa-clipboard" aria-hidden="true"></i> Copy tracking code
+								</button>
+							</div>
+							{% if member.access_type < 2 %}
+							<div class="row padding-3">
+								<div class="col-md-6 col-lg-6">
+									<button class="btn btn-outline btn-default options-button-styling" data-toggle="modal" data-target="#sendingEmail"><i class="fa fa-envelope-o fa-lg color-application padding-right-5" aria-hidden="true"></i> Send code to teammate </button>
+								</div>
+								<div class="col-md-6 col-lg-6">
+									<button class="btn btn-outline btn-default options-button-styling" onclick="openChildWindow();" ><i class="fa fa-google fa-lg color-application padding-right-5" aria-hidden="true"></i> Install via Google Tag Manager </button>
+								</div>
+								<!-- <button class="btn btn-outline btn-default options-button-styling" data-toggle="modal" data-target="#sendingEmail1"><i class="fa fa-envelope-o fa-lg color-application padding-right-5" aria-hidden="true"></i> Card Failure </button> -->
+							</div>
+							{% endif %}
+							<div class="row">
+								<p class="codeinstall-message1">(or) <a href="#book-a-demo" class="code-demo-a drip_popup">Get in touch</a> with our product expert for a quick setup</p>
+							</div>
+							<!-- <div class="row code-demo-row">
+								<div class="col-md-12">
+									<p class="code-or"> ( OR )</p>
+								</div>
+							</div>
+							<div class="row code-demo-row">
+								<div class="col-md-12">
+									<p class="code-demo-p">We can help you get started with your account setup for free <i class="em em-slightly_smiling_face emoji-styling"></i></p>
+									<div class="code-demo-anchor"><a href="#book-a-demo" class="code-demo-a">Click here to choose your time slot</a></div>
+								</div>
+							</div> -->
+						</div>
+
+					</div>
+					<div class="row cta-div" id="installBtDiv">
+						{% if member.access_type < 2 %}
+						<div class="col-xs-12 col-md-12">
+							<center>
+								<section class="progress-demo1">
+									<button id="installBt" class="ladda-button code-demo-btn" data-color="green" data-style="expand-right"><span class="ladda-label">I have installed the code</span></button>
+								</section>
+							</center>
+						</div>
+						{% endif %}
+					</div>
+
+					<div class="row" id="codeVerifyDiv" style="display: none;">
+						<div class="col-md-10 col-md-offset-2 col-lg-10">
+							<input type="text" id="id_url_verify" placeholder="Enter website URL" class="form-control getting-input-error" value="{{path.protocol}}://{{path.url}}">
+							<section class="progress-demo display-in-bl">
+								<button class="ladda-button" data-color="green" id="verify_url"><span class="ladda-label font-size-16">Allow URL</span></button>
+							</section>
+							<label class="error-class" id="url_error">Please enter valid URL</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- the below modal is for sending email modal dialog box-->
+	<div class="modal inmodal" id="sendingEmail" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content animated fadeIn">
+				<div class="modal-body">
+					<div class="row">
+						<button type="button" class="close" data-dismiss="modal"><span class="margin-right-10" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					</div>
+
+					<div class="row padding-5">
+						<p class="center-message-info">To send code to your teammate, enter their email address in the box below</p>
+					</div>
+					<div class="row">
+						<div class="col-xs-offset-1 col-xs-10">
+							<div class="row padding-2">
+								<!-- Target -->
+								<input size="60" readonly class="clipboard-modal-styling" value='<!-- CustomerLabs Tag -->{% autoescape on %}{{track_code}}{% endautoescape %}<!-- End of CustomerLabs Tag -->'>
+
+							</div>
+						</div>
+					</div>
+					<div class="row padding-5-all">
+						<div class="row">
+							<p class="center-message-info">Send email to your team <i class="em em-blush emoji-styling"></i></p>
+						</div>
+						<div class="col-xs-offset-1 col-xs-10">
+							<input type="email" id="email" placeholder="Your teammate’s email ID" class="form-control modal-input">
+							<button type="button" class="btn btn-primary modal-button" id="sendEmail">Send Code</button>
+							<label class="error-class" id="email_error"></label>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--				Sending email modal dialog box ends-->
+
+
+	<!-- the below modal is for sending email modal dialog box-->
+	<div class="modal inmodal" id="sendingEmail1" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content animated fadeIn">
+					<div class="modal-body">
+						<div class="row">
+							<!-- <button type="button" class="close" data-dismiss="modal"><span class="margin-right-10" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button> -->
+						</div>
+	
+						<div class="row padding-5">
+							<p class="center-message-info">To send code to your teammate, enter their email address in the box below</p>
+						</div>
+						<div class="row">
+							<div class="col-xs-offset-1 col-xs-10">
+								<div class="row padding-2">
+									<!-- Target -->
+									<input class="clipboard-modal-styling" value='<!-- CustomerLabs Tag -->{% autoescape on %}{{track_code}}{% endautoescape %}<!-- End of CustomerLabs Tag -->'>
+								</div>
+							</div>
+						</div>
+						<div class="row padding-5-all">
+							<div class="row">
+								<p class="center-message-info">Send email to your team <i class="em em-blush emoji-styling"></i></p>
+							</div>
+							<div class="col-xs-offset-1 col-xs-10">
+								<input type="email" id="email1" placeholder="Your teammate’s email ID" class="form-control modal-input">
+								<button type="button" class="btn btn-primary modal-button" id="sendEmail1" data-dismiss="modal">Send Code</button>
+								<label class="error-class" id="email_error1"></label>
+	
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+		<!--				Sending email modal dialog box ends-->
+
+
+<script>
+	var l = Ladda.create( document.querySelector( '#verify_url' ) );
+	l.stop();
+</script>
+<script src="/static/js/clipboard.min.js"></script>
+<script>
+    var clipboard = new Clipboard('.clipboard-button-styling');
+    clipboard.on('success', function (e) {
+        console.log(e);
+    });
+
+    clipboard.on('error', function (e) {
+        console.log(e);
+    });
+</script>
+<script>
+	$(document).on('click', '.cl_hero_demo, .contact_sales, .drip_popup',  function(e) {
+		drift.on('ready', function (api, payload) {
+			api.sidebar.open();
+		})
+	});
+</script>
+{% endblock %}

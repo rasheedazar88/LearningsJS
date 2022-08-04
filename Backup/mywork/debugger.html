@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+{% load app_utils %}
+{% block title %}Test action recorder{% endblock %}
+{% block stylesheets %}
+<link href="/static/css/iCheck/custom.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/static/css/json-viewer.css">
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+<style type="text/css">
+
+	.modal.left .modal-dialog,
+	.modal.right .modal-dialog {
+		position: fixed;
+		margin: auto;
+		width: 400px;
+		height: 100%;
+		-webkit-transform: translate3d(0%, 0, 0);
+		    -ms-transform: translate3d(0%, 0, 0);
+		     -o-transform: translate3d(0%, 0, 0);
+		        transform: translate3d(0%, 0, 0);
+	}
+
+	.modal.left .modal-content,
+	.modal.right .modal-content {
+		height: 100%;
+		overflow-y: auto;
+	}
+
+	.modal.left .modal-body,
+	.modal.right .modal-body {
+		padding: 15px 15px 80px;
+	}
+
+/*Left*/
+	.modal.left.fade .modal-dialog{
+		left: -320px;
+		-webkit-transition: opacity 0.3s linear, left 0.3s ease-out;
+		   -moz-transition: opacity 0.3s linear, left 0.3s ease-out;
+		     -o-transition: opacity 0.3s linear, left 0.3s ease-out;
+		        transition: opacity 0.3s linear, left 0.3s ease-out;
+	}
+
+	.modal.left.fade.in .modal-dialog{
+		left: 0;
+	}
+
+/*Right*/
+	.modal.right.fade .modal-dialog {
+		right: -400px;
+		-webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+		   -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+		     -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+		        transition: opacity 0.3s linear, right 0.3s ease-out;
+	}
+
+	.modal.right.fade.in .modal-dialog {
+		right: 0;
+	}
+
+/* ----- MODAL STYLE ----- */
+	.modal-content {
+		border-radius: 0;
+		border: none;
+	}
+
+	.modal-header {
+		border-bottom-color: #EEEEEE;
+		background-color: #FAFAFA;
+        position: fixed;
+        top: 0;
+        z-index: 100;
+        width: 100%;
+	}
+
+    .demo {
+	padding-top: 60px;
+	padding-bottom: 110px;
+}
+
+    .btn-demo {
+        margin: 15px;
+        padding: 10px 15px;
+        border-radius: 0;
+        font-size: 16px;
+        background-color: #FFFFFF;
+    }
+
+    .btn-demo:focus {
+        outline: 0;
+    }
+
+    .demo-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        padding: 15px;
+        background-color: #212121;
+        text-align: center;
+    }
+
+    .demo-footer > a {
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16px;
+        color: #fff;
+    }
+
+</style>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/iCheck/icheck.min.js"></script>
+<script src="/static/js/js.cookie.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<script src="/static/js/json-viewer.js"></script>
+<script>
+	$(document).ready(function () {
+		$('.i-checks').iCheck({
+			checkboxClass: 'icheckbox_square-green',
+			radioClass: 'iradio_square-green'
+		});
+	});
+
+	$(function () {
+        var start = moment('{{start_date|date:"SHORT_DATE_FORMAT"}}', "MM/DD/YYYY");
+        var end = moment();
+        function cb(start, end) {
+            $('#dRange span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+        }
+        $('div[id="dRange"]').daterangepicker({
+            "autoApply": true,
+            "opens": "left",
+            "showDropdowns": true,
+            "locale": {
+                "format": "DD/MM/YYYY",
+                "separator": " - "
+            },
+            "ranges": {
+				'Current Subscription': [moment('{{start_date|date:"SHORT_DATE_FORMAT"}}', "MM/DD/YYYY"), moment()],
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'All Time': [moment('{{member.account.created_date|date:"SHORT_DATE_FORMAT"}}', "MM/DD/YYYY"), moment()]
+            },
+            "startDate": start,
+            "endDate": moment(),
+            "maxDate": moment()
+        }, cb);
+        cb(start, end);
+
+    }, function (start, end, label) {
+        window.LABEL = (label == "Custom Range") ? start.format('L') + " - " + end.format('L') : label;
+    });
+</script>
+<script>
+ $(document).on('mouseenter', ".h5_debugger", function () {
+     var $this = $(this);
+     if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
+         $this.tooltip({
+             title: $this.text(),
+             placement: "bottom"
+         });
+         $this.tooltip('show');
+     }
+ });
+</script>
+<script>
+ $(document).on('mouseenter', ".label_debugger", function () {
+     var $this = $(this);
+     if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
+         $this.tooltip({
+             title: $this.text(),
+             placement: "bottom"
+         });
+         $this.tooltip('show');
+     }
+ });
+</script>
+<script>
+ $(document).on('mouseenter', ".anchor_limit", function () {
+     var $this = $(this);
+     if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
+         $this.tooltip({
+             title: $this.text(),
+             placement: "bottom"
+         });
+         $this.tooltip('show');
+     }
+ });
+</script>
+<script>
+$(document).ready(function(){
+	function polling(evt_id){
+		//$('#live_data').prepend('<tr><td colspan="2" align="center"><img src="/static/Img/rect_loading.svg" /></td></tr>');
+		$("#live_data").html('<div align="center"><h5 class="h5_debugger font_size_14">Fetching data ... </h5><img src="/static/Img/rect_loading.svg"></div>');
+		$.ajax({
+          data: {'csrfmiddlewaretoken':Cookies.get('csrftoken'), 'evt_id': evt_id},
+          type: 'POST',
+          url: '{% url "setup:event-data" ac_seq %}',
+		  timeout: 15000,
+          success:function(res){
+              //console.log(res);
+			  if(jQuery.isEmptyObject(res)){
+				  $("#live_data").html('<div align="center"><h5 class="h5_debugger font_size_14">No data. Waiting for action ...</h5></div>')
+			  }
+			  else {
+				  var action_records = '';
+
+				  $.each(res, function (i, row) {
+					  //console.log(i, row);
+					  //console.log(JSON.stringify(row[8]));
+					  var action_time = row[3] //moment.utc(row[3]).local().format('DD-MM-YYYY HH:mm');
+					  //action_records += '<tr><td>'+row[2]+'</td><td>'+action_time+'</td></tr>';
+					  action_records += '<div class="panel panel-default"><div class="panel-heading after_check">' +
+							  '<h4 class="panel-title"><a class="collapsed panel_debugger hello" data-toggle="collapse" data-parent="#live_data" href="#collapseLive'+i+'">' +
+							  '<div class="row"><div class="col-xs-10"><p class="label_debugger font_size_14">'+ action_time +'</p></div></div>' +
+							  '<div class="row"><div class="col-xs-12"><h5 class="h5_debugger font_size_14">'+ row[2]+'</h5></div></div></a></h4></div>' +
+							  '<div id="collapseLive'+ i +'" class="panel-collapse collapse"><div class="panel-body">';
+
+					  if(jQuery.isEmptyObject(row[4]) && jQuery.isEmptyObject(row[5]) && jQuery.isEmptyObject(row[6]) && jQuery.isEmptyObject(row[7])){
+						  action_records += '<div align="center"><h5 class="h5_debugger font_size_14">No attributes received</h5></div>'
+					  }
+
+					  /*if(!jQuery.isEmptyObject(row[4])){
+						  $.each(row[4], function (s, r) {
+							  action_records +='<ul class="debugger_ul"><li class="debugger_li"><p class="label_debugger font_size_14">'+ r.key +'</p><h5 class="h5_debugger font_size_14">'+ r.value +'</h5></ul>';
+						  });
+					  }*/
+
+					  /*$.each(row[6], function (s, r) {
+						  action_records +='<ul class="debugger_ul"><li class="debugger_li"><p class="label_debugger font_size_14">'+ r.key +'</p><h5 class="h5_debugger font_size_14">'+ r.value +'</h5></ul>';
+					  });
+					  $.each(row[7], function (s, r) {
+						  action_records +='<ul class="debugger_ul"><li class="debugger_li"><p class="label_debugger font_size_14">'+ r.key +'</p><h5 class="h5_debugger font_size_14">'+ r.value +'</h5></ul>';
+					  });*/
+
+					  if(!jQuery.isEmptyObject(row[4])) {
+						  action_records += '<div class="panel-group" id="attrsAccord'+i+'"><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title">';
+						  action_records += '<a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#attrsAccord'+i+'" href="#collAttrsTop'+i+'"><div class="anchor_limit">Attributes</div></a></h4></div>';
+						  action_records += '<div id="collAttrsTop'+i+'" class="panel-collapse collapse"><div class="panel-body">';
+
+						  $.each(row[4], function (k, r) {
+							  action_records += '<div class="debugger_border_1 debugger_header_color">';
+							  action_records += '<p class="label_debugger font_size_14">'+ r.key +'</p>';
+							  action_records += '<h5 class="h5_debugger font_size_14">'+ r.value +'</h5>';
+							  action_records += '</div>';
+						  });
+						  action_records += '</div></div></div></div>';
+					  }
+
+					  if(!jQuery.isEmptyObject(row[6])) {
+						  action_records += '<div class="panel-group" id="traitsAccord'+i+'"><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title">';
+						  action_records += '<a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#traitsAccord'+i+'" href="#collTraitsTop'+i+'"><div class="anchor_limit">User Traits</div></a></h4></div>';
+						  action_records += '<div id="collTraitsTop'+i+'" class="panel-collapse collapse"><div class="panel-body">';
+
+						  $.each(row[6], function (k, r) {
+							  action_records += '<div class="debugger_border_1 debugger_header_color">';
+							  action_records += '<p class="label_debugger font_size_14">'+ r.key +'</p>';
+							  action_records += '<h5 class="h5_debugger font_size_14">'+ r.value +'</h5>';
+							  action_records += '</div>';
+						  });
+						  action_records += '</div></div></div></div>';
+					  }
+
+					  if(!jQuery.isEmptyObject(row[7])) {
+						  action_records += '<div class="panel-group" id="grpTraitsAccord'+i+'"><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title">';
+						  action_records += '<a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#grpTraitsAccord'+i+'" href="#collGrpTraitsTop'+i+'"><div class="anchor_limit">Group Traits</div></a></h4></div>';
+						  action_records += '<div id="collGrpTraitsTop'+i+'" class="panel-collapse collapse"><div class="panel-body">';
+
+						  $.each(row[7], function (k, r) {
+							  action_records += '<div class="debugger_border_1 debugger_header_color">';
+							  action_records += '<p class="label_debugger font_size_14">'+ r.key +'</p>';
+							  action_records += '<h5 class="h5_debugger font_size_14">'+ r.value +'</h5>';
+							  action_records += '</div>';
+						  });
+						  action_records += '</div></div></div></div>';
+					  }
+
+					  if(!jQuery.isEmptyObject(row[5])) {
+						  action_records += '<div class="panel-group" id="prodAccord'+i+'"><div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title">';
+						  action_records += '<a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#prodAccord'+i+'" href="#collProdTop'+i+'"><div class="anchor_limit">Product Details</div></a></h4></div>';
+						  action_records += '<div id="collProdTop'+i+'" class="panel-collapse collapse"><div class="panel-body">';
+
+						  $.each(row[5], function (k, r) {
+							  action_records += '<div class="debugger_border_1 debugger_header_color">';
+							     $.each(r.traits, function (j, res) {
+									action_records += '<p class="label_debugger font_size_14">'+ res.key +'</p>';
+									action_records += '<h5 class="h5_debugger font_size_14">'+ res.value +'</h5>';
+								 });
+							  action_records += '</div>';
+						  });
+						  action_records += '</div></div></div></div>';
+					  }
+					  action_records += "<span class='showRaw' data-raw='"+JSON.stringify(row[8]).replace(/\\/g, "")+"'><a href='#'><img class='fa-json-clabs' src='../../../static/Img/json-1.svg'  data-toggle='tooltip' data-placement='top' title='Raw Data'></a></span>";
+					  action_records += '</div></div></div>';
+				  });
+				  $("#live_data").html(action_records);
+				  $('.red[data-id="'+evt_id+'"]').removeClass('red').addClass('green').html('<i class="fa fa-circle fa-green fa-lg" aria-hidden="true"></i>');
+				  $('#modalHead').find('.fa-red').removeClass('fa-red').addClass('fa-green');
+			  }
+          },
+          error: function() {
+			  $("#live_data").html('<div align="center"><h5 class="h5_debugger font_size_14">Error Loading data. Please refresh ... </h5></div>');
+          }
+      });
+	}
+	$(document).on('click', '#refresh_data', function(e){
+		var evt_id = $(this).attr("data-app-id");
+		//console.log(evt_id);
+		polling(evt_id);
+	});
+
+	$(document).on('click', '.showRaw', function(e){
+		e.preventDefault();
+		var modal = $('#showRaw');
+		modal.unbind();
+		modal.modal({ backdrop: 'static', keyboard: false });
+		var data = $(this).data("raw");
+		console.log(data);
+		$('#json-container').jsonview(data);
+	});
+
+	$(document).on('click', '.debug', function(e){
+		e.preventDefault();
+		var modal = $('#debugModal');
+		var evt_id = $(this).data("id");
+		var evt_name = $(this).data("name");
+		var evt_state = $(this).data("state");
+		$('#refresh_data').attr('data-app-id', evt_id);
+		//console.log(evt_id, evt_name, evt_state);
+		modal.unbind();
+		modal.modal({ backdrop: 'static', keyboard: false });
+		if(evt_state == 'green'){
+			$('#modalHead').html('<i class="fa fa-circle fa-green" aria-hidden="true"></i>'+evt_name);
+		}
+		else{
+			$('#modalHead').html('<i class="fa fa-circle fa-red" aria-hidden="true"></i>'+evt_name);
+		}
+		$('.evtHeader').text(evt_name);
+		$("#live_data").html('');
+		$('#actionInfo').html('<p align="center"><img src="/static/Img/rect_loading.svg" /></p>');
+		$.ajax({
+			data: {'evt_id':evt_id,'csrfmiddlewaretoken':Cookies.get('csrftoken')},
+			type: 'POST',
+			url: '{% url "setup:get-event-info" ac_seq %}',
+			success:function(res){
+				var evt_content = '';
+				$.each(res, function (i, row){
+					//console.log(i, row);
+					var expand = '';
+					if(i==0){expand = 'in'}
+					evt_content += '<div class="panel-group" id="topAccord'+i+'"><div class="panel panel-default"><div class="panel-heading">' +
+							'<h4 class="panel-title"><a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#topAccord'+i+'" href="#collTop'+i+'"><div class="anchor_limit">'+row.event_url+'</div></a></h4></div>' +
+							'<div id="collTop'+i+'" class="panel-collapse collapse '+expand+'"><div class="panel-body">' +
+							'<div class="debugger_border_1 debugger_header_color"><p class="label_debugger font_size_14">Action Type</p><h5 class="h5_debugger font_size_14">'+row.event_type+'</h5></div>' +
+							'<div class="debugger_border_1 debugger_header_color"><p class="label_debugger font_size_14">Selector</p><h5 class="h5_debugger font_size_14">'+row.selector+'</h5></div>' +
+							'<div class="debugger_border_1 debugger_header_color"><p class="label_debugger font_size_14">Element</p><h5 class="h5_debugger font_size_14">'+row.element+'</h5></div>' +
+							'<div class="debugger_border_1 debugger_header_color"><p class="label_debugger font_size_14">User Mapping</p><h5 class="h5_debugger font_size_14">'+row.user_map+'</h5></div>' +
+							'<div class="debugger_border_1 debugger_header_color"><p class="label_debugger font_size_14">Path</p><h5 class="h5_debugger font_size_14">'+row.path+'</h5></div>';
+					if (!jQuery.isEmptyObject(row.attributes)){
+					evt_content += '<div class="panel-group" id="firstAccord'+i+'"><div class="panel panel-default"><div class="panel-heading">' +
+							'<h4 class="panel-title"><a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#firstAccord'+i+'" href="#collOne'+i+'">User Attributes</a></h4></div>';
+					evt_content += '<div id="collOne'+i+'" class="panel-collapse collapse"><div class="panel-body"><div class="panel-group" id="secondAccord'+i+'"><div class="panel panel-default">';
+					var index = 0;
+					$.each(row.attributes, function (key, r){
+						evt_content += '<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#secondAccord'+ i + String(index)+'" href="#collTwo'+ i + String(index)+'"> <div class="row"><div class="col-xs-10 anchor_limit">'+key+'</div></div></a></h4></div>';
+						evt_content += '<div id="collTwo'+ i + String(index)+'" class="panel-collapse collapse"><div class="panel-body"><ul class="debugger_ul"><li class="debugger_li"><p class="label_debugger font_size_14">Element</p>' +
+								'<h5 class="h5_debugger font_size_14">'+ r.selector+'</h5></li><li class="debugger_li"><p class="label_debugger font_size_14">Type</p>' +
+								'<h5 class="h5_debugger font_size_14">'+ r.type+'</h5></li></ul></div></div></div>';
+						index += 1;
+					});
+					evt_content += '</div></div></div></div></div></div>';}
+
+					if (!jQuery.isEmptyObject(row.prod_attrs)){
+					evt_content += '<div class="panel-group" id="thirdAccord'+i+'"><div class="panel panel-default"><div class="panel-heading">' +
+							'<h4 class="panel-title"><a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#thirdAccord'+i+'" href="#collThree'+i+'">Product Attributes</a></h4></div>';
+					evt_content += '<div id="collThree'+i+'" class="panel-collapse collapse"><div class="panel-body"><div class="panel-group" id="fourthAccord'+i+'"><div class="panel panel-default">';
+					var pindex = 0;
+					$.each(row.prod_attrs, function (key, r){
+						evt_content += '<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed panel_debugger" data-toggle="collapse" data-parent="#fourthAccord'+ i + String(pindex)+'" href="#collFour'+ i + String(pindex)+'"> <div class="row"><div class="col-xs-10 anchor_limit">'+key+'</div></div></a></h4></div>';
+						evt_content += '<div id="collFour'+ i + String(pindex)+'" class="panel-collapse collapse"><div class="panel-body"><ul class="debugger_ul"><li class="debugger_li"><p class="label_debugger font_size_14">Element</p>' +
+								'<h5 class="h5_debugger font_size_14">'+ r.selector+'</h5></li><li class="debugger_li"><p class="label_debugger font_size_14">Type</p>' +
+								'<h5 class="h5_debugger font_size_14">'+ r.type+'</h5></li></ul></div></div></div>';
+						pindex += 1;
+					});
+					evt_content += '</div></div></div></div></div></div>';}
+					evt_content += '</div></div></div></div>';
+
+				});
+				$('#actionInfo').html(evt_content);
+			},
+			error: function(err) {
+				$('#actionInfo').html('Error loading event info.');
+				//clalert('error', 'There is an error. Please refresh the page.');
+			}
+		});
+
+		polling(evt_id);
+		//window.pollId = setInterval(function() { polling(evt_id); }, 50000);
+
+	});
+
+	$('#model_close').on('click', function () {
+		$('#evtInfo').html('');
+		$("#live_data").html('');
+		$('#refresh_data').attr('data-app-id', "");
+		//if(pollId){clearInterval(pollId)};
+	});
+
+	$('#action_data > tr').each(function(i, row) {
+		var evt_id = $(row).find('td:eq(0)').data('id');
+		if($(row).find('td:eq(0)').hasClass('red')){
+			$.ajax({
+			  data: {'evt_id':evt_id, 'csrfmiddlewaretoken':Cookies.get('csrftoken')},
+			  type: 'POST',
+			  url: '{% url "setup:action-test-check" ac_seq %}',
+			  success:function(res){
+				  if(res.success == "1"){
+					$(row).find('td:eq(0)').removeClass('red').addClass('green');
+				  	$(row).find('i:eq(0)').removeClass('fa-red').addClass('fa-green');
+				  }
+			  },
+			  error: function() {
+				  //clalert('error', 'There is an error. Please refresh the page.');
+			  }
+		  });
+		}
+	});
+	$.fn.eventCountLoad = function () {
+		$('#action_data > tr').each(function (i, row) {
+			var evt_id = $(row).find('td:eq(0)').data('id');
+			var startDate = $('#dRange').data('daterangepicker').startDate.valueOf();
+			var endDate = $('#dRange').data('daterangepicker').endDate.valueOf();
+			$.ajax({
+			  data: {'evt_id':evt_id, 'csrfmiddlewaretoken':Cookies.get('csrftoken'),
+				  'start': startDate, 'end': endDate},
+			  type: 'POST',
+			  url: '{% url "setup:event-count" ac_seq %}',
+			  success:function(res){
+				  $(row).find('td:eq(3)').text(res.count);
+			  },
+			  error: function() {
+				  //clalert('error', 'There is an error. Please refresh the page.');
+			  }
+			});
+
+		});
+	}
+	//$(this).eventCountLoad();
+
+	/*$('#dRange, select').on('apply.daterangepicker', function () {
+		$(".evt_count").html('<img src="/static/Img/loading.gif">');
+		$(this).eventCountLoad();
+	});*/
+
+	/*if($('#action_data > tr').find('td:eq(0)').hasClass('red')){
+		//console.log('red is there');
+	}*/
+
+});
+
+function openActionRecorder(){
+	window.open('{% url "visualizer:index" ac_seq %}', '_blank');
+}
+
+</script>
+
+
+{% endblock %}
+{% block maincontent %}
+
+<div class="row">
+	{% include 'workflow/flow_left_nav.html' %}
+	<div class="col-md-8 col-lg-8 border-style1 text-change_info" style="padding-top: 0;">
+        <div class="row bg-secondary">
+            <div class="col-md-12 nopadding"> 
+                <h2 class="font-bold font-size-22 font_color_subs no-margins padding-left-25 padding-v-10">Create a Segment</h2>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 100px;">
+            <h1 class="no-margins stage_size text-align-center font-weight-500 font_color_subs">No more “all website visitors” retargeting - it’s time for first-party audience.</h1>
+        </div>
+        <div class="row m-t">
+            <ul class="margin-hr-175 nopadding font-size-14 cl_marginb_25">
+				<li style="margin-bottom: 25px;">Create personalized audience segments based on the behavior, traits, demographics & purchase history for your MOFU and BOFU audiences.</li>
+				<li style="margin-top: 25px;">Sync your audience segments simultaneously with Facebook and Google to run hyper- personalized ads and reduce your CPM for MOFU & BOFU campaigns. </li>
+			</ul>
+        </div>
+        <div class="row" style="margin-bottom: 95px;">
+            <div class="col-md-12 text-align-center nopadding font-size-14">
+                <button class="ladda-button padding-v-14 padding-hr-44 bg-primary border-style1 font-weight-500" data-color="green" onclick="location.href='{% url 'integrations:index' ac_seq %}';">
+                    <span class="event_styles_td floatr space">Create a segment</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal left inmodal modal-json-whole" id="showRaw" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog modal-lg margin-top-3-json">
+		<div class="modal-content animated fadeIn">
+			<div class="modal-body cl-json-modal">
+				<div class="row">
+					<button type="button" class="close" data-dismiss="modal"><span class="margin-top-40-json" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				</div>
+				<div class="row">
+					<div class="col-xs-offset-1 col-xs-10">
+						<h1>Raw Data</h1>
+						<!-- <p class="cl-json-p">All about the Raw data for this action.</p> -->
+					</div>
+				</div>
+
+				<div class="row padding-5-all-cl">
+					<div class="col-xs-offset-1 col-xs-10 cl-json-whole" id="json-container">
+					</div>
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+
+

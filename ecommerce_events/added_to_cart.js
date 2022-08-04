@@ -34,14 +34,6 @@ var properties = {
             "t": "string",
             "v": "black"
         },
-        "product_coupen": {
-            "t": "string",
-            "v": "CLABS001"
-        },
-        "product_position": {
-            "t": "number",
-            "v": "1"
-        },
         "product_image": {
             "t": "string",
             "v": "https://cdn.shopify.com/s/files/1/0251/2555/2216/products/2014_11_3_Addis_Look17_02_940x.jpg?v=1563886402"
@@ -55,7 +47,7 @@ var properties = {
             },
             "clicked_from": {
                 "t": "string",
-                "v": "home page"
+                "v": "products"
             }
         }
   }

@@ -1,11 +1,11 @@
 var configurations = [
   // Welcome
   {
-    selector: ".banner__heading",
-    events: ["click", "dblclick"],
+    selector: ".rich-text__text",
+    events: ["click"],
     data: {
       example: {
-        selector: ".banner__text",
+        selector: ".baner_heading .banner__textrrttt",
         type: "text",
       },
     },
@@ -23,7 +23,7 @@ var configurations = [
   },
   // Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.
   {
-    selector: ".rich-text__text",
+    selector: ".rich-text__textyeyeyeyeyeey",
     events: ["click"],
     data: {
       name: {
@@ -61,7 +61,7 @@ for (var i = 0; i < configurations.length; i++) {
           let settings = configuration.data[attribute];
           let type = configuration.data[attribute].type;
           if (type == "text") {
-            let value = document.querySelector(settings.selector).innerText;
+            let value = document.querySelector(settings.selector) ? document.querySelector(settings.selector).innerText : null;
             eventData[attribute] = value;
           } else if (type == "query_params") {
             const urlParams = new URLSearchParams(window.location.search);
@@ -87,13 +87,3 @@ for (var i = 0; i < configurations.length; i++) {
 }
 
 
-var search = document.getElementById("Search-In-Modal"); 
-search.addEventListener("submit", function(){
-  console.log("SEARCH SUBMITTED")
-})
-
-
-
-
-
-fbq('track', 'CompleteRegistration');

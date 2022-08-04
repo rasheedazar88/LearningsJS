@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <label>Enter Date</label>
+      <input type="date" id="start_date"  />
+
+      <button id="getvalue">Calculate</button>
+    </div>
+  </body>
+</html>
+
+<style>
+  
+</style>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
+<script>
+
+  $(document).ready(function(){
+    // $('#start_date').change(function(){
+    //   var start = new Date($('#start_date').val());
+    // })
+
+    console.log(new Date().getMonth)
+
+    $('#getvalue').click(function(){
+      // var start = new Date($('#start_date').val());
+      // var end = new Date()
+      // var diff = new Date(end - start);
+      // var mm = diff.getMonth();
+      // var dd = diff.getDay();
+      // var h = diff.getHours();
+      // var min = diff.getMinutes(); 
+      // var sec = diff.getSeconds(); 
+      // console.log(new Date($("#start_date").val()).getDate())
+
+      var oldDate = new Date(); 
+      oldDate.format("dd-mm-yyyy")
+      console.log(oldDate); 
+      var yyyy =0; 
+      var mm = 0;
+      var dd = 0;
+      var h = 1;
+      var min = 1;
+      var sec = 60;
+
+      // console.log("Month:"+mm+" Date: "+ dd+" Hours:" + h + " Minutes: "+ min + " Seconds: "+ sec)
+      if(sec > 0 && yyyy == 0 && mm == 0 && dd == 0 && h == 0 && min == 0 ) {
+        console.log(sec + ' seconds ago...')
+      } else if (sec > 0 && yyyy == 0 && mm == 0 && dd == 0 && h == 0 && min > 0 ){
+        console.log(min + ' minutes ago...')
+      } else if (sec > 0 && yyyy == 0 && mm == 0 && dd == 0 && h > 0 && min > 0 ){
+        console.log(h + ' hours ago...')
+      } else if (sec > 0 && yyyy == 0 && mm == 0 && dd > 0 && h > 0 && min > 0 ){
+        console.log(dd + ' days ago...')
+      } else if (sec > 0 && yyyy == 0 && mm > 0 && dd > 0 && h > 0 && min > 0 ){
+        console.log(mm + ' months ago...')
+      } else if (sec > 0 && yyyy > 0 && mm > 0 && dd > 0 && h > 0 && min > 0 ){
+        console.log(yyyy + ' years ago...')
+      }
+      
+    })
+  })
+
+</script>

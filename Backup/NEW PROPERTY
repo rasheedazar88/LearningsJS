@@ -1,0 +1,218 @@
+import React from 'react';
+var $ = require('jquery');
+import cookie from 'react-cookie';
+import SearchBar from './SearchBar';
+var Select = require('react-select');
+
+var options = [
+    { value: 'one', label: 'One' },
+    { value: 'two', label: 'Two' }
+];
+var ConditionOptions=[
+  {value : 'equal',label : 'Equal to'},
+  {value : 'contains',label : 'Contains'},
+  {value : 'not_contains',label : 'Does not contain'}
+  ];
+
+export default class NewProperty extends React.Component {
+  constructor(){
+    super();
+    this.state={};
+    this.state.field='';
+    this.state.value='';
+    this.state.optionSelected='';
+    this.state.types = [];
+    this.state.showTypes=false;
+    this.state.showValue=false;
+    this.getValues = this.getValues.bind(this);
+    this.getFields = this.getFields.bind(this);
+    this.saveCond = this.saveCond.bind(this);
+  }
+  render() {
+   
+
+    var that=this;
+    function changeField(val) {
+        that.setState({
+          field: (val)? val.value : '',
+          options: [],
+          showTypes: false
+        });
+        if(val){
+          setTimeout(function() {
+            that.setState({
+              showTypes: true
+            });
+          },500);
+        }
+    }
+  
+    function changeOption(val) {
+      console.log("options", val)
+      that.setState({
+        optionSelected: (val)? val.value : '',
+        showValue: true
+      });
+    }
+
+    function changeValue(val) {
+        that.setState({
+          value: (val)? val.value : ''
+        });
+    }
+
+    function changeTextValue(val){
+      that.setState({
+        value: val
+      })
+    }
+  
+    return (
+      <div className="row">
+        <div className="col-lg-3 col-xs-3">
+            <Select.Async
+                name="field-label"
+                className="width-100"
+                placeholder="Select filter"
+                value={this.state.field}
+                onChange={changeField}
+                loadOptions={this.getFields}
+                cache={false}
+                clearable={false}
+            />
+        </div>
+        <div className="col-lg-3 col-xs-3">
+            <Select
+                name="field-option"
+                className="width-100"
+                value={this.state.optionSelected}
+                onChange={changeOption}
+                options={ConditionOptions}
+                clearable={false}
+                disabled={false}
+            />    
+        </div>
+        <div className="col-lg-3 col-xs-3">
+            {this.state.showValue && this.state.optionSelected == 'equal' ?            
+                <Select.Async
+                    name="field-value"
+                    className="width-100"
+                    placeholder="Min 4 Char"
+                    value={this.state.value}
+                    onChange={changeValue}
+                    options={options}
+                    autoload={true}
+                    cache={false}
+                    clearable={false}
+                    noResultsText = "No Results Found"
+                    loadOptions={this.getValues}
+                    loadingPlaceholder = 'Min 4 Char'
+                />  
+                : this.state.showValue ?
+                <div style={{position: "relative"}}>
+                    <input
+                    className="form-control height-37"
+                    placeholder="value" 
+                    value={this.state.value}
+                    onChange={(e)=>changeTextValue(e.target.value)}
+                    /> 
+
+                    
+                    </div>
+                    
+                    : null
+                }
+        </div>
+            {(this.state.field !='' && this.state.optionSelected!='')?
+            <div className="col-lg-1 col-xs-1">
+                <a onClick={this.saveCond}><i className="fa fa-plus-circle fa-lg padding-top-10 button-plus-grey" aria-hidden="true"></i></a>
+            </div> : null
+            }
+
+      </div>
+    );
+  }
+  saveCond(){
+    if(this.state.field !='' && this.state.value !=''&&this.state.optionSelected!=''){
+      this.setState({
+        field:'',
+        value:'',
+        optionSelected:'',
+        showValue:false
+      });
+
+      this.props.onSave({'prop' : this.state.field, 'value' : this.state.value,'operator':this.state.optionSelected});
+
+    }
+  }
+  getValues (input, callback) {
+      var options=this.state.options;
+      if(this.props.field=='utm'){
+        var like_cond='[{"prop": "cl_utm_params.key","value": "'+ this.state.field +'"}';
+        var data={'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': 'utm_params', 'field': 'cl_utm_params.value',
+                'like_cond': (input)? like_cond + ',{"prop":"cl_utm_params.value","value":"'+ input +'*"}]' : like_cond + ']'};
+      }else if(this.props.field=='other'){
+        like_cond='[{"prop": "cl_other_params.key","value": "'+ this.state.field +'"}';
+        data={'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': 'oth_params', 'field': 'cl_other_params.value',
+                'like_cond': (input)? like_cond + ',{"prop":"cl_other_params.value","value":"'+ input +'*"}]' : like_cond + ']'};
+      }else if(this.props.field=='utraits'){
+        like_cond='[{"prop": "traits.key","value": "'+ this.state.field +'"}';
+        data={'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': 'traits', 'field': 'traits.value',
+                'like_cond': (input)? like_cond + ',{"prop":"traits.value","value":"'+ input +'*"}]' : like_cond + ']'};
+      }else if(this.props.field=='gtraits'){
+        like_cond='[{"prop": "group_attributes.key.raw","value": "'+ this.state.field +'"}';
+        data={'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': 'grpTraits', 'field': 'group_attributes.value',
+                'like_cond': (input)? like_cond + ',{"prop":"group_attributes.value","value":"'+ input +'*"}]' : like_cond + ']'};
+        //data={'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': 'grpTraits', 'field': 'gtraits.value',
+        //      'field_key': this.state.field, 'q': input}
+      }
+      else{
+        data={'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': 'prefetch', 'field': this.state.field,
+                'cond': (input)? '[{"prop": "'+ this.state.field + '","value": "'+ input+'*"}]' : '[]'};
+      }
+      if(input.length > 3) {
+        $.ajax({
+          url: window.optUrl,
+          type: 'POST',
+          data : data,
+          dataType: 'json',
+          success:function(res){
+            callback(null, {
+                options: res.values,
+                complete:false
+            });
+          }, 
+        });
+      } else {
+        this.setState({
+          value: ''
+        })
+        callback(null, {
+              options: [],
+              complete: false
+        });
+      }
+  }
+  getFields (input, callback) {
+      var opt = [];
+      $.ajax({
+            url: window.optUrl,
+            type: 'POST',
+            data : {'csrfmiddlewaretoken': cookie.load('csrftoken'), 'type': this.props.field, 'q': input},
+            dataType: 'json',
+            success:function(res){
+              callback(null, {
+                  options: res.values,
+                  complete: true
+              });
+            }
+      });
+      /*setTimeout(function() {
+          callback(null, {
+              options: opt,
+              complete: true
+          });
+      }, 2000);*/
+  }
+
+}

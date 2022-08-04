@@ -1,0 +1,20 @@
+.cl-menu-icon {
+    height: 30px;
+    width: 30px;
+}
+
+.cl-menu-icon * {
+    height: 100%;
+}
+
+.search .text {
+    min-width: 350px; 
+    padding: 10px 30px 10px 10px;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 0 1px 0 rgb(0 0 0 / 10%);
+    border-radius: 4px;
+    background: #fff;
+}
+.search .icon {
+    right: 10px;
+}

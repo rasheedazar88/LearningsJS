@@ -1,0 +1,23 @@
+{% load app_utils %}
+{% setup_flow_status request.user ac_seq as flow_state %}
+{% with path=request.resolver_match.url_name %}
+<div class="col-sm-3 col-md-3 col-lg-3">
+    <a class="back-menu-setup" href="{% url 'setup:workflow' ac_seq %}"><i class="fa fa-chevron-left" aria-hidden="true"></i> Back to setup guide</a>
+    <p class="heading-setup"><i class="fa fa-hand-o-down" aria-hidden="true"></i> Steps to set up CustomerLabs</p>
+    <ul class="menu-setup">
+        <li class="completed-setup">Account Setup</li>
+        <li onclick="location.href='{% url 'setup:code-setup' ac_seq %}';"
+            class="{% if flow_state.code_verified %}completed-setup {% else %}menu-setup-li {% endif %}{% if path == 'code-setup' or path == 'code-verify-success' %}active{% endif %}">
+            Connect Website
+        </li>
+        <li onclick="location.href='{% url 'setup:action-onboard' ac_seq %}';"
+            class="{% if flow_state.action_recorded %}completed-setup {% else %}menu-setup-li {% endif %}{% if path == 'action-onboard' %}active{% endif %}">
+            Send data to Destination
+        </li>
+        <li onclick="location.href='{% url 'setup:action-test-check' ac_seq %}';"
+            class="{% if flow_state.action_tested %}completed-setup {% else %}menu-setup-li {% endif %}{% if path == 'action-test-empty' or path == 'action-test-check' %}active{% endif %}">
+            Create a Segmant
+        </li>
+    </ul>
+</div>
+{% endwith %}

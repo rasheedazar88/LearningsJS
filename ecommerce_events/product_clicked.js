@@ -34,10 +34,6 @@ var eventName = "Product clicked"
                 "t": "string",
                 "v": "blue"
             },
-            "product_coupen": {
-                "t": "string",
-                "v": "CLABS003"
-            },
             "product_position": {
                 "t": "number",
                 "v": "3"
@@ -55,7 +51,7 @@ var eventName = "Product clicked"
         },
         "clicked_from": {
             "t": "string",
-            "v": "home page"
+            "v": "products"
         }
     }
   }
